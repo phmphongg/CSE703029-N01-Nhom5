@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}Trang Chủ - Fashion Store{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="hero-title">Thời Trang Hiện Đại</h1>
+                <p class="hero-subtitle">Khám phá bộ sưu tập thời trang mới nhất với phong cách trẻ trung và năng động</p>
+                <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-shopping-bag"></i> Mua Sắm Ngay
+                </a>
+                <a href="#featured-products" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-eye"></i> Xem Sản Phẩm
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="fw-bold" style="color: #2c3e50;">Danh Mục Sản Phẩm</h2>
+                <p class="text-muted">Chọn danh mục bạn yêu thích</p>
+            </div>
+        </div>
+        <div class="row">
+            {% for category in categories %}
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                <a href="{{ url_for('products', category=category.id) }}" class="text-decoration-none">
+                    <div class="text-center p-4 h-100" style="background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: all 0.3s ease;">
+                        <div class="mb-3" style="font-size: 3rem; color: #667eea;">
+                            {% if 'Áo Nam' in category.name %}
+                                <i class="fas fa-tshirt"></i>
+                            {% elif 'Áo Nữ' in category.name %}
+                                <i class="fas fa-female"></i>
+                            {% elif 'Quần Nam' in category.name %}
+                                <i class="fas fa-male"></i>
+                            {% elif 'Quần Nữ' in category.name %}
+                                <i class="fas fa-dress"></i>
+                            {% elif 'Giày' in category.name %}
+                                <i class="fas fa-shoe-prints"></i>
+                            {% else %}
+                                <i class="fas fa-star"></i>
+                            {% endif %}
+                        </div>
+                        <h5 class="fw-bold" style="color: #2c3e50;">{{ category.name }}</h5>
+                        <p class="text-muted small">{{ category.description }}</p>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products Section -->
+<section id="featured-products" class="py-5" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="fw-bold" style="color: #2c3e50;">Sản Phẩm Nổi Bật</h2>
+                <p class="text-muted">Những sản phẩm mới nhất và được yêu thích nhất</p>
+            </div>
+        </div>
+        <div class="row">
+            {% for product in products %}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="product-card h-100">
+                    <div class="position-relative overflow-hidden">
+                        <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}" onerror="this.src='https://via.placeholder.com/300x250/667eea/ffffff?text=Fashion+Item'">
+                        <div class="position-absolute top-0 end-0 m-3">
+                            <span class="badge bg-danger">Hot</span>
+                        </div>
+                        {% if product.category_name %}
+                        <div class="position-absolute bottom-0 start-0 m-3">
+                            <span class="category-tag">{{ product.category_name }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="product-title">{{ product.name }}</h5>
+                        <p class="card-text text-muted flex-grow-1">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="product-price">{{ "{:,.0f}".format(product.price) }}₫</span>
+                            <div class="text-warning">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <small class="text-muted ms-1">(5.0)</small>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-primary">
+                                <i class="fas fa-eye"></i> Xem Chi Tiết
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="row">
+            <div class="col-12 text-center">
+                <a href="{{ url_for('products') }}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-th-large"></i> Xem Tất Cả Sản Phẩm
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 text-center mb-4">
+                <div class="p-4">
+                    <div class="mb-3" style="font-size: 3rem; color: #667eea;">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <h5 class="fw-bold">Giao Hàng Nhanh</h5>
+                    <p class="text-muted">Giao hàng trong 24h tại TP.HCM</p>
+                </div>
+            </div>
+            <div class="col-md-3 text-center mb-4">
+                <div class="p-4">
+                    <div class="mb-3" style="font-size: 3rem; color: #667eea;">
+                        <i class="fas fa-undo-alt"></i>
+                    </div>
+                    <h5 class="fw-bold">Đổi Trả Dễ Dàng</h5>
+                    <p class="text-muted">Đổi trả trong vòng 7 ngày</p>
+                </div>
+            </div>
+            <div class="col-md-3 text-center mb-4">
+                <div class="p-4">
+                    <div class="mb-3" style="font-size: 3rem; color: #667eea;">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h5 class="fw-bold">Bảo Hành Chất Lượng</h5>
+                    <p class="text-muted">Cam kết chất lượng sản phẩm</p>
+                </div>
+            </div>
+            <div class="col-md-3 text-center mb-4">
+                <div class="p-4">
+                    <div class="mb-3" style="font-size: 3rem; color: #667eea;">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h5 class="fw-bold">Hỗ Trợ 24/7</h5>
+                    <p class="text-muted">Tư vấn và hỗ trợ mọi lúc</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 text-white">
+                <h3 class="fw-bold mb-3">Đăng Ký Nhận Tin</h3>
+                <p>Nhận thông tin về các sản phẩm mới và ưu đãi đặc biệt</p>
+            </div>
+            <div class="col-md-6">
+                <form class="d-flex gap-2">
+                    <input type="email" class="form-control" placeholder="Email của bạn..." style="border-radius: 25px;">
+                    <button type="submit" class="btn btn-light" style="border-radius: 25px; white-space: nowrap;">
+                        <i class="fas fa-paper-plane"></i> Đăng Ký
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add hover effects to category cards
+    document.addEventListener('DOMContentLoaded', function() {
+        const categoryCards = document.querySelectorAll('[href*="products"]');
+        categoryCards.forEach(card => {
+            const cardDiv = card.querySelector('div');
+            if (cardDiv) {
+                card.addEventListener('mouseenter', function() {
+                    cardDiv.style.transform = 'translateY(-10px)';
+                    cardDiv.style.boxShadow = '0 15px 35px rgba(0,0,0,0.15)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    cardDiv.style.transform = 'translateY(0)';
+                    cardDiv.style.boxShadow = '0 5px 15px rgba(0,0,0,0.08)';
+                });
+            }
+        });
+        
+        // Newsletter form submission
+        const newsletterForm = document.querySelector('form');
+        if (newsletterForm) {
+            newsletterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = this.querySelector('input[type="email"]').value;
+                if (email) {
+                    alert('Cảm ơn bạn đã đăng ký! Chúng tôi sẽ gửi thông tin mới nhất đến email của bạn.');
+                    this.reset();
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

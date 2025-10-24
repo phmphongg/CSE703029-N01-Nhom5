@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${product.name} + ' - Fashion Store'">Chi Tiết Sản Phẩm</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .navbar-brand, .nav-link {
+            color: white !important;
+            font-weight: 600;
+        }
+        
+        .dropdown-menu {
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .dropdown-item {
+            padding: 0.7rem 1.5rem;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #667eea;
+            color: white;
+        }
+        
+        .product-image {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .product-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .related-product-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .related-product-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .related-product-card img {
+            height: 200px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="fas fa-shopping-bag"></i> Fashion Store
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/}">
+                            <i class="fas fa-home"></i> Trang Chủ
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/products}">
+                            <i class="fas fa-tshirt"></i> Sản Phẩm
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" th:href="@{/cart}">
+                            <i class="fas fa-shopping-cart"></i> Giỏ Hàng
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- User Menu - Show when logged in -->
+                <ul class="navbar-nav" sec:authorize="isAuthenticated()">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle"></i> 
+                            <span sec:authentication="name">Username</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li>
+                                <a class="dropdown-item" th:href="@{/profile}">
+                                    <i class="fas fa-user"></i> Thông Tin Cá Nhân
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" th:href="@{/orders}">
+                                    <i class="fas fa-shopping-cart"></i> Đơn Hàng Của Tôi
+                                </a>
+                            </li>
+                            <li sec:authorize="hasRole('ADMIN')">
+                                <a class="dropdown-item" th:href="@{/admin}">
+                                    <i class="fas fa-cog"></i> Admin Dashboard
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" th:href="@{/logout}">
+                                    <i class="fas fa-sign-out-alt"></i> Đăng Xuất
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <!-- Guest Menu - Show when not logged in -->
+                <ul class="navbar-nav" sec:authorize="!isAuthenticated()">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/login}">
+                            <i class="fas fa-sign-in-alt"></i> Đăng Nhập
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/register}">
+                            <i class="fas fa-user-plus"></i> Đăng Ký
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Product Detail -->
+    <div class="container my-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/products}">Sản phẩm</a></li>
+                <li class="breadcrumb-item active" th:text="${product.name}">Sản phẩm</li>
+            </ol>
+        </nav>
+        
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <img th:src="${product.imageUrl}" 
+                     th:alt="${product.name}" 
+                     class="product-image"
+                     onerror="this.src='https://via.placeholder.com/500x500/667eea/ffffff?text=Fashion+Item'">
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="product-card">
+                    <span class="badge bg-primary mb-3" 
+                          th:if="${product.category != null}" 
+                          th:text="${product.category.name}">Category</span>
+                    <h1 class="fw-bold mb-3" th:text="${product.name}">Product Name</h1>
+                    
+                    <div class="text-warning mb-3">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <span class="text-muted ms-2">(5.0 / 128 đánh giá)</span>
+                    </div>
+                    
+                    <div class="product-price mb-4" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + '₫'">299,000₫</div>
+                    
+                    <div class="mb-4">
+                        <h5 class="fw-bold">Mô tả sản phẩm:</h5>
+                        <p class="text-muted" th:text="${product.description}">Description</p>
+                    </div>
+                    
+                    <!-- Add to Cart Form -->
+                    <form th:action="@{/cart/add}" method="post" id="addToCartForm">
+                        <input type="hidden" name="productId" th:value="${product.id}">
+                        
+                        <div class="row mb-4" th:if="${product.size}">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Kích thước:</label>
+                                <select class="form-select" name="size" id="sizeSelect" required>
+                                    <option value="">Chọn size</option>
+                                    <option th:each="size : ${product.sizeList}" 
+                                            th:value="${size}" 
+                                            th:text="${size}">S</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6" th:if="${product.color}">
+                                <label class="form-label fw-bold">Màu sắc:</label>
+                                <select class="form-select" name="color" id="colorSelect" required>
+                                    <option value="">Chọn màu</option>
+                                    <option th:each="color : ${product.colorList}" 
+                                            th:value="${color}" 
+                                            th:text="${color}">Trắng</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Hidden inputs for default values if size/color not available -->
+                        <input type="hidden" th:if="${product.size == null}" name="size" value="M">
+                        <input type="hidden" th:if="${product.color == null}" name="color" value="Mặc định">
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Số lượng:</label>
+                            <div class="input-group" style="max-width: 150px;">
+                                <button class="btn btn-outline-secondary" type="button" onclick="decreaseQty()">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <input type="number" class="form-control text-center" 
+                                       name="quantity" id="quantityInput" 
+                                       value="1" min="1" th:max="${product.stock}" required>
+                                <button class="btn btn-outline-secondary" type="button" onclick="increaseQty()">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg flex-fill">
+                                <i class="fas fa-shopping-cart"></i> Thêm Vào Giỏ
+                            </button>
+                            <button type="button" class="btn btn-success btn-lg flex-fill" onclick="buyNow()">
+                                <i class="fas fa-bolt"></i> Mua Ngay
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="mt-4">
+                        <p class="mb-2"><i class="fas fa-check-circle text-success"></i> Còn hàng (<span th:text="${product.stock}">50</span> sản phẩm)</p>
+                        <p class="mb-2"><i class="fas fa-truck text-info"></i> Giao hàng toàn quốc</p>
+                        <p class="mb-2"><i class="fas fa-undo text-warning"></i> Đổi trả trong 7 ngày</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Related Products -->
+        <div class="mt-5" th:if="${relatedProducts != null && !relatedProducts.empty}">
+            <h3 class="fw-bold mb-4">Sản Phẩm Liên Quan</h3>
+            <div class="row">
+                <div th:each="relProd : ${relatedProducts}" class="col-lg-3 col-md-6 mb-4">
+                    <div class="card related-product-card">
+                        <img th:src="${relProd.imageUrl}" 
+                             th:alt="${relProd.name}" 
+                             class="card-img-top"
+                             onerror="this.src='https://via.placeholder.com/300x200/667eea/ffffff?text=Fashion+Item'">
+                        <div class="card-body">
+                            <h6 class="card-title" th:text="${relProd.name}">Product</h6>
+                            <p class="text-primary fw-bold" 
+                               th:text="${#numbers.formatDecimal(relProd.price, 0, 'COMMA', 0, 'POINT')} + '₫'">299,000₫</p>
+                            <a th:href="@{/product/{id}(id=${relProd.id})}" class="btn btn-sm btn-outline-primary w-100">
+                                Xem Chi Tiết
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2025 Fashion Store. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Quantity controls
+        function increaseQty() {
+            const input = document.getElementById('quantityInput');
+            const max = parseInt(input.max) || 99;
+            if (parseInt(input.value) < max) {
+                input.value = parseInt(input.value) + 1;
+            }
+        }
+        
+        function decreaseQty() {
+            const input = document.getElementById('quantityInput');
+            if (parseInt(input.value) > 1) {
+                input.value = parseInt(input.value) - 1;
+            }
+        }
+        
+        // Buy Now function
+        function buyNow() {
+            const form = document.getElementById('addToCartForm');
+            const sizeSelect = document.getElementById('sizeSelect');
+            const colorSelect = document.getElementById('colorSelect');
+            
+            // Validate form
+            if (sizeSelect && !sizeSelect.value) {
+                alert('Vui lòng chọn kích thước!');
+                return false;
+            }
+            
+            if (colorSelect && !colorSelect.value) {
+                alert('Vui lòng chọn màu sắc!');
+                return false;
+            }
+            
+            // Change form action to buy-now endpoint
+            form.action = '/cart/buy-now';
+            form.submit();
+        }
+        
+        // Form validation
+        document.getElementById('addToCartForm').addEventListener('submit', function(e) {
+            const sizeSelect = document.getElementById('sizeSelect');
+            const colorSelect = document.getElementById('colorSelect');
+            
+            if (sizeSelect && !sizeSelect.value) {
+                e.preventDefault();
+                alert('Vui lòng chọn kích thước!');
+                return false;
+            }
+            
+            if (colorSelect && !colorSelect.value) {
+                e.preventDefault();
+                alert('Vui lòng chọn màu sắc!');
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>

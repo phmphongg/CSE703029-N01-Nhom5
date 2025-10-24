@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ - Fashion Store</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem 0;
+        }
+        
+        .navbar-brand, .nav-link {
+            color: white !important;
+            font-weight: 600;
+        }
+        
+        .nav-link:hover {
+            color: #ffd700 !important;
+        }
+        
+        .dropdown-menu {
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .dropdown-item {
+            padding: 0.7rem 1.5rem;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #667eea;
+            color: white;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .product-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background: white;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        
+        .product-card img {
+            height: 250px;
+            object-fit: cover;
+        }
+        
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .category-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .category-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="fas fa-shopping-bag"></i> Fashion Store
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/}">
+                            <i class="fas fa-home"></i> Trang Chủ
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/products}">
+                            <i class="fas fa-tshirt"></i> Sản Phẩm
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" th:href="@{/cart}">
+                            <i class="fas fa-shopping-cart"></i> Giỏ Hàng
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- User Menu - Show when logged in -->
+                <ul class="navbar-nav" sec:authorize="isAuthenticated()">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle"></i> 
+                            <span sec:authentication="name">Username</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li>
+                                <a class="dropdown-item" th:href="@{/profile}">
+                                    <i class="fas fa-user"></i> Thông Tin Cá Nhân
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" th:href="@{/orders}">
+                                    <i class="fas fa-shopping-cart"></i> Đơn Hàng Của Tôi
+                                </a>
+                            </li>
+                            <li sec:authorize="hasRole('ADMIN')">
+                                <a class="dropdown-item" th:href="@{/admin}">
+                                    <i class="fas fa-cog"></i> Admin Dashboard
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" th:href="@{/logout}">
+                                    <i class="fas fa-sign-out-alt"></i> Đăng Xuất
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <!-- Guest Menu - Show when not logged in -->
+                <ul class="navbar-nav" sec:authorize="!isAuthenticated()">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/login}">
+                            <i class="fas fa-sign-in-alt"></i> Đăng Nhập
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/register}">
+                            <i class="fas fa-user-plus"></i> Đăng Ký
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">Thời Trang Hiện Đại</h1>
+            <p class="lead">Khám phá bộ sưu tập thời trang mới nhất với phong cách trẻ trung và năng động</p>
+            <a th:href="@{/products}" class="btn btn-light btn-lg mt-3">
+                <i class="fas fa-shopping-bag"></i> Mua Sắm Ngay
+            </a>
+        </div>
+    </section>
+    
+    <!-- Categories Section -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-5">Danh Mục Sản Phẩm</h2>
+            <div class="row">
+                <div th:each="category : ${categories}" class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                    <a th:href="@{/products(category=${category.id})}" class="text-decoration-none">
+                        <div class="category-card">
+                            <div class="category-icon">
+                                <i class="fas fa-tshirt" th:if="${category.name.contains('Áo')}"></i>
+                                <i class="fas fa-male" th:if="${category.name.contains('Quần')}"></i>
+                                <i class="fas fa-shoe-prints" th:if="${category.name.contains('Giày')}"></i>
+                                <i class="fas fa-star" th:if="${!category.name.contains('Áo') && !category.name.contains('Quần') && !category.name.contains('Giày')}"></i>
+                            </div>
+                            <h5 class="fw-bold" th:text="${category.name}">Category</h5>
+                            <p class="text-muted small" th:text="${category.description}">Description</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Featured Products -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-5">Sản Phẩm Nổi Bật</h2>
+            <div class="row">
+                <div th:each="product : ${products}" class="col-lg-3 col-md-6 mb-4">
+                    <div class="card product-card">
+                        <img th:src="${product.imageUrl}" 
+                             th:alt="${product.name}" 
+                             class="card-img-top"
+                             onerror="this.src='https://via.placeholder.com/300x250/667eea/ffffff?text=Fashion+Item'">
+                        <div class="card-body">
+                            <span class="badge bg-primary mb-2" th:if="${product.category != null}" th:text="${product.category.name}">Category</span>
+                            <h5 class="card-title" th:text="${product.name}">Product Name</h5>
+                            <p class="card-text text-muted" th:text="${#strings.abbreviate(product.description, 100)}">Description</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + '₫'">299,000₫</span>
+                                <div class="text-warning">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                            <a th:href="@{/product/{id}(id=${product.id})}" class="btn btn-primary w-100 mt-3">
+                                <i class="fas fa-eye"></i> Xem Chi Tiết
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <p>&copy; 2025 Fashion Store. All rights reserved.</p>
+            <div>
+                <a href="#" class="text-white me-3"><i class="fab fa-facebook fa-2x"></i></a>
+                <a href="#" class="text-white me-3"><i class="fab fa-instagram fa-2x"></i></a>
+                <a href="#" class="text-white"><i class="fab fa-youtube fa-2x"></i></a>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
